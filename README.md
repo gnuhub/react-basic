@@ -281,7 +281,7 @@ function BlueTheme(children) {
   return try {
     children();
   } catch effect ThemeBorderColorRequest -> [, continuation] {
-    return continuation('blue');
+    continuation('blue');
   }
 }
 
@@ -291,4 +291,3 @@ function App(data) {
   );
 }
 ```
-
