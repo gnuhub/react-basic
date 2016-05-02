@@ -1,16 +1,16 @@
 # React - 基本理论概念
 
-这个文档是我试图对 React 做出合理解释的心智模型。意图是通过描述依据演绎推理来的设计。
+我写此文是想正式地阐述我心中 React 的[心智模型](http://baike.baidu.com/view/2333986.htm)。目的是解释为什么我们会这样设计 React，同时你也可以根据这些论点反推出 React。
 
-当然会有一些有争议的前提，而且这个例子本身的设计也可能有 bug 或疏忽。这只是正式确定它的最初阶段。如果你有更好的完善它的想法可以随时提交 pull request 。不透过太多库的细节而从简单到复杂的过程应该是比较合理的。
+不可否认，此文中的部分论据或前提尚存争议，而且部分示例的设计可能存在 bug 或疏忽。这只是正式确定它的最初阶段。如果你有更好的完善它的想法可以随时提交 pull request。本文不会介绍框架细节中的奇技淫巧，相信这样能提纲挈领，让你看清 React 由简单到复杂的设计过程。
 
-React.js 的真实实现是充满务实的方法，递增的步骤，算法优化，遗留代码，debug 工具以及其他一些可以让它真的具有高可用性的内容。另外一些东西是很短暂的，如果真的有很高的价值和优先级，随着时间流逝也会进入修改, 但是真实的实现是更加难以推导的。
+React.js 的真实实现中充满了具体问题的解决方案，渐进式的解法，算法优化，历史遗留代码，debug 工具以及其他一些可以让它真的具有高可用性的内容。这些代码可能并不稳定，因为未来浏览器的变化和功能权重的变化随时面临改变。所以具体的代码很难彻底解释清楚。
 
-我喜欢可以让自己得到训练的心智模型。
+我偏向于选择一种我能完全 hold 住的简洁的心智模型来作介绍。
 
-## 转变
+## 变换（Transformation）
 
-React 核心的前提是 UI 变化是把一个数据的映射简化为一种不同的格式。同样的输入返回同样的输出。一个简单的函数。
+设计 React 的核心前提是认为 UI 只是把数据通过映射关系变换成另一种形式的数据。同样的输入必会有同样的输出。这恰好就是纯函数。
 
 ```js
 function NameBox(name) {
@@ -23,9 +23,9 @@ function NameBox(name) {
 { fontWeight: 'bold', labelContent: 'Sebastian Markbåge' };
 ```
 
-## 抽象
+## 抽象（Abstraction）
 
-确实不能把一个复杂的 UI 放到一个简单的函数。但重点是 UI 可以抽象为一段可重用的代码(在使用时)不需要透露实现细节。就像函数之间的调用。
+你不可能仅用一个函数就能实现复杂的 UI。重要的是，你需要把 UI 抽象成多个隐藏内部细节，又可复用的函数。通过在一个函数中调用另一个函数来实现复杂的 UI，这就是抽象。
 
 ```js
 function FancyUserBox(user) {
@@ -50,9 +50,9 @@ function FancyUserBox(user) {
 };
 ```
 
-## 组合
+## 组合（Composition）
 
-为了真正达到重用的特性，只重用叶子然后每次都为他们创建一个新的容器是不够的。你还需要可以包含其他抽象的容器进行组合。我理解的“组合”就是将两个或者多个不同的抽象合并为一个。
+为了真正达到重用的特性，只重用叶子然后每次都为他们创建一个新的容器是不够的。你还需要可以包含其他抽象的容器再次进行组合。我理解的“组合”就是将两个或者多个不同的抽象合并为一个。
 
 ```js
 function FancyBox(children) {
@@ -70,11 +70,11 @@ function UserBox(user) {
 }
 ```
 
-## 状态（state)
+## 状态（State）
 
-一个 UI 不单单是对服务器端或业务逻辑的复制。实际上还有很多状态是针对具体的某个项目的。举个例子，在一个 text field 中打字。它不一定能复用到其他页面或者你的手机设备。滚动位置是一个典型的你几乎不会复用在多个项目中的例子。
+UI 不单单是对服务器端或业务逻辑状态的复制。实际上还有很多状态是针对具体的渲染目标。举个例子，举个例子，在一个 text field 中打字。它不一定要复制到其他页面或者你的手机设备。滚动位置这个状态是一个典型的你几乎不会复制到多个渲染目标的。
 
-我比较偏好让我们的数据模型是不可变的。我们把可以改变 state 的函数串联起来作为原点放置在顶层。
+我们倾向于使用不可变的数据模型。我们把可以改变 state 的函数串联起来作为原点放置在顶层。
 
 ```js
 function FancyNameBox(user, likes, onClick) {
@@ -85,7 +85,7 @@ function FancyNameBox(user, likes, onClick) {
   ]);
 }
 
-// Implementation Details
+// 实现细节
 
 var likes = 0;
 function addOneMoreLike() {
@@ -93,7 +93,7 @@ function addOneMoreLike() {
   rerender();
 }
 
-// Init
+// 初始化
 
 FancyNameBox(
   { firstName: 'Sebastian', lastName: 'Markbåge' },
@@ -102,11 +102,11 @@ FancyNameBox(
 );
 ```
 
-*NOTE: 这些例子使用副作用去更新 state。我实际的想法是当一个"update"传入时我们返回下一个版本的 state 。不使用那个也很好解释，但是在未来的版本我们会修改这些例子.*
+*注意：本例更新状态时会带来副作用（addOneMoreLike 函数中）。我实际的想法是当一个“update”传入时我们返回下一个版本的状态，但那样会比较复杂。此示例待更新*
 
 ## Memoization
 
-当我们知道一个函数很清晰，那么反复的调用它是非常浪费资源的。所以我们为这个函数创造了一个 memorized 版本，用来追踪最后一个参数和结果。这样如果我们继续使用同样的值，就不需要反复执行它了。
+对于纯函数，使用相同的参数一次次调用未免太浪费资源。我们可以创建一个函数的 memorized 版本，用来追踪最后一个参数和结果。这样如果我们继续使用同样的值，就不需要反复执行它了。
 
 ```js
 function memoize(fn) {
@@ -134,9 +134,9 @@ function NameAndAgeBox(user, currentTime) {
 }
 ```
 
-## Lists
+## 列表（Lists）
 
-大多数 UI 是一种列表结构，之后会对每一个 item 产生多个不同值的列表。这是一个天然的层级。
+大部分 UI 都是展示列表数据中不同 item 的列表结构。这是一个天然的层级。
 
 为了管理列表中的每一个 item 的 state ，我们可以创造一个 Map 容纳具体 item 的 state。
 
@@ -158,15 +158,15 @@ function updateUserLikes(id, likeCount) {
 UserList(data.users, likesPerUser, updateUserLikes);
 ```
 
-*NOTE: 现在我们像 FancyNameBox 传了多个不同的参数。这打破了我们的 memoization 因为我们每次只能存储一个值。更多相关内容在下面.*
+*注意：现在我们向 FancyNameBox 传了多个不同的参数。这打破了我们的 memoization 因为我们每次只能存储一个值。更多相关内容在下面。*
 
-## Continuations
+## 连续性（Continuations）
 
-不幸的是，自从 UI 中有太多的列表，要想清晰的管理就需要大量的模板。
+不幸的是，自从 UI 中有太多的列表，明确的管理就需要大量的重复性样板代码。
 
-我们可以通过推迟一些函数的执行，进而把一些模板移出业务逻辑。举个例子，使用"柯里化" ([`bind`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind) in JavaScript)。然后我们可以从核心的函数外面传递 state，这样我们就不依赖模板了。
+我们可以通过推迟一些函数的执行，进而把一些模板移出业务逻辑。比如，使用“柯里化”（JavaScript 中的 [`bind`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)）。然后我们可以从核心的函数外面传递 state，这样就没有样板代码了。
 
-并没有减少模板的数量只是至少把他们移出了重要的业务逻辑。
+下面这样并没有减少样板代码，但至少把它从关键业务逻辑中剥离。
 
 ```js
 function FancyUserList(users) {
@@ -220,9 +220,9 @@ continuation(likesPerUser, updateUserLikes);
 
 ## Memoization Map
 
-一旦我们想在一个列表 memoization 中 memoize 多个 item 就会变得很困难。你需要知道一些复杂的缓存算法来平衡频率性的内存消耗。
+一旦我们想在一个 memoization 列表中 memoize 多个 item 就会变得很困难。因为你需要制定复杂的缓存算法来平衡调用频率和内存占有率。
 
-还好 UI 在同一个位置会适当的稳定。树种的同一位置每次都会获得同样的值。这个树对 memoization 来说是一个非常好用的策略。
+还好 UI 在同一个位置会相对的稳定。相同的位置一般每次都会接受相同的参数。这样以来，使用一个集合来做 memoization 是一个非常好用的策略。
 
 我们可以用对待 state 同样的方式，在组合的函数中传递一个 memoization 缓存。
 
@@ -257,14 +257,13 @@ function FancyBoxWithState(
 const MemoizedFancyNameBox = memoize(FancyNameBox);
 ```
 
-## Algebraic Effects
+## 代数效应（Algebraic Effects）
 
-如果穿过很多层级去传递每一个很小的值，这会显得有一点 PITA 。不通过调用中间件在两个组件之间传递东西是一种很好的捷径。在 React 中我们叫作 “context”。
+多层抽象需要共享琐碎数据时，一层层传递数据非常麻烦。如果能有一种方式可以在多层抽象中快捷地传递数据，同时又不需要牵涉到中间层级，那该有多好。React 中我们把它叫做“context”。
 
-有时候数据依赖不是很整洁的依赖组件树。举个例子，在布局算法中，你需要在实现他们的位置之前了解子节点的大小。
+有时候数据依赖并不是严格按照抽象树自上而下进行。举个例子，在布局算法中，你需要在实现他们的位置之前了解子节点的大小。
 
-现在，这个例子有一点超纲。我会使用 [Algebraic Effects](http://math.andrej.com/eff/) 作为[proposed for ECMAScript](https://esdiscuss.org/topic/one-shot-delimited-continuations-with-effect-handlers)
-。如果你对函数式编程很熟悉，它们在避免由 monads 带来的中间件格式的困扰。
+现在，这个例子有一点超纲。我会使用 [代数效应](http://math.andrej.com/eff/) 这个由我发起的 [ECMAScript 新特性提议](https://esdiscuss.org/topic/one-shot-delimited-continuations-with-effect-handlers)。如果你对函数式编程很熟悉，它们 在避免由 monad 强制引入的仪式一样的编码。
 
 ```js
 function ThemeBorderColorRequest() { }
