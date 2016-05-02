@@ -1,16 +1,16 @@
-# React - Basic Theoretical Concepts
+# React - 基本理论概念
 
-This document is my attempt to formally explain my mental model of React. The intention is to describe this in terms of deductive reasoning that lead us to this design.
+这个文档是我试图对 React 做出合理解释的心智模型。意图是通过描述依据演绎推理来的设计。
 
-There may certainly be some premises that are debatable and the actual design of this example may have bugs and gaps. This is just the beginning of formalizing it. Feel free to send a pull request if you have a better idea of how to formalize it. The progression from simple -> complex should make sense along the way without too many library details shining through.
+当然会有一些有争议的前提，而且这个例子本身的设计也可能有 bug 或疏忽。这只是正式确定它的最初阶段。如果你有更好的完善它的想法可以随时提交 pull request 。不透过太多库的细节而从简单到复杂的过程应该是比较合理的。
 
-The actual implementation of React.js is full of pragmatic solutions, incremental steps, algorithmic optimizations, legacy code, debug tooling and things you need to make it actually useful. Those things are more fleeting, can change over time if it is valuable enough and have high enough priority. The actual implementation is much more difficult to reason about.
+React.js 的真实实现是充满务实的方法，递增的步骤，算法优化，遗留代码，debug 工具以及其他一些可以让它真的具有高可用性的内容。另外一些东西是很短暂的，如果真的有很高的价值和优先级，随着时间流逝也会进入修改, 但是真实的实现是更加难以推导的。
 
-I like to have a simpler mental model that I can ground myself in.
+我喜欢可以让自己得到训练的心智模型。
 
-## Transformation
+## 转变
 
-The core premise for React is that UIs are simply a projection of data into a different form of data. The same input gives the same output. A simple pure function.
+React 核心的前提是 UI 变化是把一个数据的映射简化为一种不同的格式。同样的输入返回同样的输出。一个简单的函数。
 
 ```js
 function NameBox(name) {
@@ -23,9 +23,9 @@ function NameBox(name) {
 { fontWeight: 'bold', labelContent: 'Sebastian Markbåge' };
 ```
 
-## Abstraction
+## 抽象
 
-You can't fit a complex UI in a single function though. It is important that UIs can be abstracted into reusable pieces that don't leak their implementation details. Such as calling one function from another.
+确实不能把一个复杂的 UI 放到一个简单的函数。但重点是 UI 可以抽象为一段可重用的代码(在使用时)不需要透露实现细节。就像函数之间的调用。
 
 ```js
 function FancyUserBox(user) {
@@ -50,9 +50,9 @@ function FancyUserBox(user) {
 };
 ```
 
-## Composition
+## 组合
 
-To achieve truly reusable features, it is not enough to simply reuse leaves and build new containers for them. You also need to be able to build abstractions from the containers that *compose* other abstractions. The way I think about "composition" is that they're combining two or more different abstractions into a new one.
+为了真正达到重用的特性，只重用叶子然后每次都为他们创建一个新的容器是不够的。你还需要可以包含其他抽象的容器进行组合。我理解的“组合”就是将两个或者多个不同的抽象合并为一个。
 
 ```js
 function FancyBox(children) {
@@ -70,11 +70,11 @@ function UserBox(user) {
 }
 ```
 
-## State
+## 状态（state)
 
-A UI is NOT simply a replication of server / business logic state. There is actually a lot of state that is specific to an exact projection and not others. For example, if you start typing in a text field. That may or may not be replicated to other tabs or to your mobile device. Scroll position is a typical example that you almost never want to replicate across multiple projections.
+一个 UI 不单单是对服务器端或业务逻辑的复制。实际上还有很多状态是针对具体的某个项目的。举个例子，在一个 text field 中打字。它不一定能复用到其他页面或者你的手机设备。滚动位置是一个典型的你几乎不会复用在多个项目中的例子。
 
-We tend to prefer our data model to be immutable. We thread functions through that can update state as a single atom at the top.
+我比较偏好让我们的数据模型是不可变的。我们把可以改变 state 的函数串联起来作为原点放置在顶层。
 
 ```js
 function FancyNameBox(user, likes, onClick) {
@@ -102,11 +102,11 @@ FancyNameBox(
 );
 ```
 
-*NOTE: These examples use side-effects to update state. My actual mental model of this is that they return the next version of state during an "update" pass. It was simpler to explain without that but we'll want to change these examples in the future.*
+*NOTE: 这些例子使用副作用去更新 state。我实际的想法是当一个"update"传入时我们返回下一个版本的 state 。不使用那个也很好解释，但是在未来的版本我们会修改这些例子.*
 
 ## Memoization
 
-Calling the same function over and over again is wasteful if we know that the function is pure. We can create a memoized version of a function that keeps track of the last argument and last result. That way we don't have to reexecute it if we keep using the same value.
+当我们知道一个函数很清晰，那么反复的调用它是非常浪费资源的。所以我们为这个函数创造了一个 memorized 版本，用来追踪最后一个参数和结果。这样如果我们继续使用同样的值，就不需要反复执行它了。
 
 ```js
 function memoize(fn) {
@@ -136,9 +136,9 @@ function NameAndAgeBox(user, currentTime) {
 
 ## Lists
 
-Most UIs are some form of lists that then produce multiple different values for each item in the list. This creates a natural hierarchy.
+大多数 UI 是一种列表结构，之后会对每一个 item 产生多个不同值的列表。这是一个天然的层级。
 
-To manage the state for each item in a list we can create a Map that holds the state for a particular item.
+为了管理列表中的每一个 item 的 state ，我们可以创造一个 Map 容纳具体 item 的 state。
 
 ```js
 function UserList(users, likesPerUser, updateUserLikes) {
@@ -158,15 +158,15 @@ function updateUserLikes(id, likeCount) {
 UserList(data.users, likesPerUser, updateUserLikes);
 ```
 
-*NOTE: We now have multiple different arguments passed to FancyNameBox. That breaks our memoization because we can only remember one value at a time. More on that below.*
+*NOTE: 现在我们像 FancyNameBox 传了多个不同的参数。这打破了我们的 memoization 因为我们每次只能存储一个值。更多相关内容在下面.*
 
 ## Continuations
 
-Unfortunately, since there are so many lists of lists all over the place in UIs, it becomes quite a lot of boilerplate to manage that explicitly.
+不幸的是，自从 UI 中有太多的列表，要想清晰的管理就需要大量的模板。
 
-We can move some of this boilerplate out of our critical business logic by deferring execution of a function. For example, by using "currying" ([`bind`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind) in JavaScript). Then we pass the state through from outside our core functions that are now free of boilerplate.
+我们可以通过推迟一些函数的执行，进而把一些模板移出业务逻辑。举个例子，使用"柯里化" ([`bind`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind) in JavaScript)。然后我们可以从核心的函数外面传递 state，这样我们就不依赖模板了。
 
-This isn't reducing boilerplate but is at least moving it out of the critical business logic.
+并没有减少模板的数量只是至少把他们移出了重要的业务逻辑。
 
 ```js
 function FancyUserList(users) {
@@ -185,7 +185,7 @@ const resolvedBox = {
 
 ## State Map
 
-We know from earlier that once we see repeated patterns we can use composition to avoid reimplementing the same pattern over and over again. We can move the logic of extracting and passing state to a low-level function that we reuse a lot.
+之前我们知道可以使用组合避免重复执行相同的东西这样一种重复模式。我们可以把执行和传递 state 逻辑挪动到被复用很多的低层级的函数中去。
 
 ```js
 function FancyBoxWithState(
@@ -220,11 +220,11 @@ continuation(likesPerUser, updateUserLikes);
 
 ## Memoization Map
 
-Once we want to memoize multiple items in a list memoization becomes much harder. You have to figure out some complex caching algorithm that balances memory usage with frequency.
+一旦我们想在一个列表 memoization 中 memoize 多个 item 就会变得很困难。你需要知道一些复杂的缓存算法来平衡频率性的内存消耗。
 
-Luckily, UIs tend to be fairly stable in the same position. The same position in the tree gets the same value every time. This tree turns out to be a really useful strategy for memoization.
+还好 UI 在同一个位置会适当的稳定。树种的同一位置每次都会获得同样的值。这个树对 memoization 来说是一个非常好用的策略。
 
-We can use the same trick we used for state and pass a memoization cache through the composable function.
+我们可以用对待 state 同样的方式，在组合的函数中传递一个 memoization 缓存。
 
 ```js
 function memoize(fn) {
@@ -259,11 +259,12 @@ const MemoizedFancyNameBox = memoize(FancyNameBox);
 
 ## Algebraic Effects
 
-It turns out that it is kind of a PITA to pass every little value you might need through several levels of abstractions. It is kind of nice to sometimes have a shortcut to pass things between two abstractions without involving the intermediates. In React we call this "context".
+如果穿过很多层级去传递每一个很小的值，这会显得有一点 PITA 。不通过调用中间件在两个组件之间传递东西是一种很好的捷径。在 React 中我们叫作 “context”。
 
-Sometimes the data dependencies don't neatly follow the abstraction tree. For example, in layout algorithms you need to know something about the size of your children before you can completely fulfill their position.
+有时候数据依赖不是很整洁的依赖组件树。举个例子，在布局算法中，你需要在实现他们的位置之前了解子节点的大小。
 
-Now, this example is a bit "out there". I'll use [Algebraic Effects](http://math.andrej.com/eff/) as [proposed for ECMAScript](https://esdiscuss.org/topic/one-shot-delimited-continuations-with-effect-handlers). If you're familiar with functional programming, they're avoiding the intermediate ceremony imposed by monads.
+现在，这个例子有一点超纲。我会使用 [Algebraic Effects](http://math.andrej.com/eff/) 作为[proposed for ECMAScript](https://esdiscuss.org/topic/one-shot-delimited-continuations-with-effect-handlers)
+。如果你对函数式编程很熟悉，它们在避免由 monads 带来的中间件格式的困扰。
 
 ```js
 function ThemeBorderColorRequest() { }
