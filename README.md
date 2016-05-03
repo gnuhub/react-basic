@@ -1,4 +1,4 @@
-# React - 基本理论概念
+# React 设计思想
 
 我写此文是想正式地阐述我心中 React 的[心智模型](http://baike.baidu.com/view/2333986.htm)。目的是解释为什么我们会这样设计 React，同时你也可以根据这些论点反推出 React。
 
