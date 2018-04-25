@@ -1,3 +1,21 @@
+# 2018.4.26 阅读总结
+* react-basic 解释了 why 为什么我们会这样设计 React
+* react现在已经很复杂，这篇文档提纲挈领，让你看清 React 由简单到复杂的设计过程
+* 实战派 具体问题的解决方案，渐进式的解法，算法优化，历史遗留代码，debug 工具以及其他一些可以让它真的具有高可用性的内容
+* Transformation 纯函数 UI的定义 UI 只是把数据通过映射关系变换成另一种形式的数据
+* 这个UI的定义很重要，将原来UI转变成了纯函数,UI变成了函数编程，函数复用，构建复杂
+* 这个UI的Transformation是react的基础思想
+* 在 unix编程哲学中提到，软件编程的本质就是控制复杂度，唯一的解决办法就是模块化，问题在局部
+* 从根本上讲，所有软件开发技术的最终目标都是为了解决一个问题。这个问题就是:人类很 难同时考虑多个想法。因此，利用所有这些技术我们可以将我们的想法分块和封装成可以复用的 包，并且能够通过这些包的新组合和匹配方式来解决新问题。
+* 通过 Transformation Abstraction Composition来控制复杂度
+* 组合 react优先使用组合不是继承，facebook这么多年都没有遇到必须使用集成的情况
+* golang的面向对象模型也是使用组合模型而不是继承模型，可以组合的优势
+* 目前只理解了 Transformation Abstraction Composition
+* 无数的地方都在实践这三个基本思想
+
+
+
+
 # React 设计思想
 
 > 译者序：本文是 React 核心开发者、有 React API 终结者之称的 Sebastian Markbåge 撰写，阐述了他设计 React 的初衷。阅读此文，你能站在更高的高度思考 React 的过去、现在和未来。原文地址：https://github.com/reactjs/react-basic
